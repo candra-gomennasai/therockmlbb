@@ -50,9 +50,9 @@ export default function RootLayout({
           #site-preloader .pl-ring {
             position: absolute;
             inset: -12px;
-            border: 2.5px solid rgba(37,99,235,0.1);
+            border: 2.5px solid rgba(122,0,0,0.12);
             border-radius: 38px;
-            border-top-color: #2563eb;
+            border-top-color: #7a0000;
             animation: plRingSpin 1s linear infinite;
           }
           @keyframes plRingSpin { to { transform: rotate(360deg); } }
@@ -63,7 +63,7 @@ export default function RootLayout({
             letter-spacing: 0.12em;
           }
           #site-preloader .pl-rock { color: #0f172a; }
-          #site-preloader .pl-cafe { color: #2563eb; }
+          #site-preloader .pl-cafe { color: #7a0000; }
           #site-preloader .pl-track {
             width: 120px; height: 3px;
             background: #e2e8f0;
@@ -71,7 +71,7 @@ export default function RootLayout({
           }
           #site-preloader .pl-fill {
             width: 100%; height: 100%;
-            background: linear-gradient(90deg, #2563eb, #60a5fa);
+            background: linear-gradient(90deg, #7a0000, #b91c1c);
             transform: translateX(-100%);
             animation: plBarFill 1.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
           }
