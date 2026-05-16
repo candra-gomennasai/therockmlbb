@@ -13,9 +13,13 @@ const TEAM_LOGOS: Record<string, string> = {
   TLID: "https://ik.imagekit.io/7xrur26qt/TLID-Primary500x500.png",
 };
 
-function getTeamLogo(teamName: string) {
+function getTeamLogo(teamName: string, explicitLogoUrl?: string, teamLogoMap?: Record<string, string>) {
+  const explicit = String(explicitLogoUrl || "").trim();
+  if (explicit) return explicit;
   const raw = (teamName || "").toUpperCase().trim();
   const compact = raw.replace(/\s+/g, "");
+  const mapped = teamLogoMap?.[raw];
+  if (mapped) return mapped;
   if (compact.includes("AE")) return TEAM_LOGOS.AE;
   if (compact.includes("BTR") || compact.includes("VIT")) return TEAM_LOGOS.BTR;
   if (compact.includes("DEWA")) return TEAM_LOGOS.DEWA;
@@ -28,8 +32,14 @@ function getTeamLogo(teamName: string) {
   return `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(teamName || "team")}`;
 }
 
-const MatchCard = ({ match, showDateTime = true }: { match: any; showDateTime?: boolean }) => {
+const MatchCard = ({ match, showDateTime = true, teamLogoMap = {} }: { match: any; showDateTime?: boolean; teamLogoMap?: Record<string, string> }) => {
   const isFinished = match.status === 'FINISHED';
+  const score1 = Number(match.score1 ?? 0);
+  const score2 = Number(match.score2 ?? 0);
+  const team1Win = isFinished && score1 > score2;
+  const team2Win = isFinished && score2 > score1;
+  const team1Lose = isFinished && score1 < score2;
+  const team2Lose = isFinished && score2 < score1;
   
   const scheduleDates = [
     'Jumat, 08 Mei 2026', 'Sabtu, 09 Mei 2026',
@@ -64,9 +74,17 @@ const MatchCard = ({ match, showDateTime = true }: { match: any; showDateTime?: 
 
         <div className="ms-team-box" style={{ position: 'relative', zIndex: 2 }}>
           <div className="ms-team-logo-gem">
-             <img src={getTeamLogo(match.team1)} alt={match.team1 || "team 1"} />
+             <img
+               src={getTeamLogo(match.team1, match.team1Logo, teamLogoMap)}
+               alt={match.team1 || "team 1"}
+               style={{ transform: `scale(${Number(match.team1LogoScale ?? 1) || 1})` }}
+             />
           </div>
-          <span className="ms-team-name">{match.team1}</span>
+          <span className="ms-team-name">
+            {match.team1}
+            {team1Win && <span className="ms-win-badge">WIN</span>}
+            {team1Lose && <span className="ms-lose-badge">LOSE</span>}
+          </span>
         </div>
 
         <div className="ms-score-box" style={{ position: 'relative', zIndex: 2 }}>
@@ -80,9 +98,17 @@ const MatchCard = ({ match, showDateTime = true }: { match: any; showDateTime?: 
 
         <div className="ms-team-box" style={{ position: 'relative', zIndex: 2 }}>
           <div className="ms-team-logo-gem">
-             <img src={getTeamLogo(match.team2)} alt={match.team2 || "team 2"} />
+             <img
+               src={getTeamLogo(match.team2, match.team2Logo, teamLogoMap)}
+               alt={match.team2 || "team 2"}
+               style={{ transform: `scale(${Number(match.team2LogoScale ?? 1) || 1})` }}
+             />
           </div>
-          <span className="ms-team-name">{match.team2}</span>
+          <span className="ms-team-name">
+            {match.team2}
+            {team2Win && <span className="ms-win-badge">WIN</span>}
+            {team2Lose && <span className="ms-lose-badge">LOSE</span>}
+          </span>
         </div>
       </div>
 
@@ -116,6 +142,36 @@ const MatchCard = ({ match, showDateTime = true }: { match: any; showDateTime?: 
         }
         .ms-stamp-bg.finished { color: #dc2626; border-color: #dc2626; }
         .ms-team-name, .ms-digits { text-shadow: 0 0 10px #fff, 0 0 5px #fff; }
+        .ms-win-badge {
+          margin-left: 8px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          height: 16px;
+          padding: 0 6px;
+          border-radius: 999px;
+          background: rgba(22, 163, 74, 0.14);
+          color: #15803d;
+          font-size: 0.55rem;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          vertical-align: middle;
+        }
+        .ms-lose-badge {
+          margin-left: 8px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          height: 16px;
+          padding: 0 6px;
+          border-radius: 999px;
+          background: rgba(220, 38, 38, 0.12);
+          color: #b91c1c;
+          font-size: 0.55rem;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          vertical-align: middle;
+        }
       `}</style>
     </div>
   );
@@ -123,7 +179,7 @@ const MatchCard = ({ match, showDateTime = true }: { match: any; showDateTime?: 
 
 const DATES = [8, 9, 15, 16, 22, 23, 29, 30];
 
-const MatchSchedule = ({ matches, title = 'JADWAL', showDateTime = true }: { matches: any[]; title?: string; showDateTime?: boolean; }) => {
+const MatchSchedule = ({ matches, title = 'JADWAL', showDateTime = true, teamLogoMap = {} }: { matches: any[]; title?: string; showDateTime?: boolean; teamLogoMap?: Record<string, string>; }) => {
   return (
     <section className="ms-section">
       <div className="ms-header">
@@ -134,7 +190,7 @@ const MatchSchedule = ({ matches, title = 'JADWAL', showDateTime = true }: { mat
         </div>
       </div>
       <div className="ms-grid">
-        {matches.map(m => <MatchCard key={m.id} match={m} showDateTime={showDateTime} />)}
+        {matches.map(m => <MatchCard key={m.id} match={m} showDateTime={showDateTime} teamLogoMap={teamLogoMap} />)}
         {matches.length === 0 && <div className="ms-empty">No matches scheduled.</div>}
       </div>
       <style jsx>{`

@@ -6,12 +6,60 @@ import MatchSchedule from "@/components/MatchSchedule";
 import SiteFrame from "@/components/SiteFrame";
 import TeamsShowcase from "@/components/TeamsShowcase";
 import FinalStageBracket from "@/components/FinalStageBracket";
-import { collection, onSnapshot, query } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useEffect, useState, useMemo, Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const VALID_DATES = [8, 9, 15, 16, 22, 23, 29, 30];
+const PUBLIC_CACHE_TTL_MS = 5 * 60 * 1000;
+
+async function loadCollectionWithTTL(key: string, collectionName: string) {
+  const now = Date.now();
+  const storageKey = `trc-cache:${key}`;
+
+  try {
+    const raw = localStorage.getItem(storageKey);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed?.expiresAt && parsed.expiresAt > now && Array.isArray(parsed.data)) {
+        return parsed.data;
+      }
+    }
+  } catch {}
+
+  let data: any[] = [];
+
+  // Primary mode: single document per collection -> { items: [...] }
+  const singleDoc = await getDoc(doc(db, collectionName, "data"));
+  if (singleDoc.exists()) {
+    const payload = singleDoc.data() as { items?: any[] };
+    if (Array.isArray(payload?.items)) {
+      data = payload.items.map((item: any, idx: number) => ({
+        id: String(item?.id || `${collectionName}-${idx}`),
+        ...item,
+      }));
+    }
+  }
+
+  // Fallback for old multi-document structure (temporary compatibility)
+  if (!data.length) {
+    const snap = await getDocs(query(collection(db, collectionName)));
+    data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  }
+
+  try {
+    localStorage.setItem(
+      storageKey,
+      JSON.stringify({
+        expiresAt: now + PUBLIC_CACHE_TTL_MS,
+        data,
+      })
+    );
+  } catch {}
+
+  return data;
+}
 
 function HomeContent() {
   const pathname = usePathname();
@@ -22,19 +70,30 @@ function HomeContent() {
 
   const [matches, setMatches] = useState<any[]>([]);
   const [standings, setStandings] = useState<any[]>([]);
+  const [teams, setTeams] = useState<any[]>([]);
   const [finalMatches, setFinalMatches] = useState<any[]>([]);
 
   useEffect(() => {
-    const unsubMatches = onSnapshot(query(collection(db, 'matches')), (snap) => {
-      setMatches(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
-    const unsubStandings = onSnapshot(query(collection(db, 'standings')), (snap) => {
-      setStandings(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
-    const unsubFinalMatches = onSnapshot(query(collection(db, 'finalMatches')), (snap) => {
-      setFinalMatches(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
-    return () => { unsubMatches(); unsubStandings(); unsubFinalMatches(); };
+    let mounted = true;
+
+    const loadAll = async () => {
+      const [matchesData, standingsData, teamsData, finalMatchesData] = await Promise.all([
+        loadCollectionWithTTL("matches", "matches"),
+        loadCollectionWithTTL("standings", "standings"),
+        loadCollectionWithTTL("teams", "teams"),
+        loadCollectionWithTTL("finalMatches", "finalMatches"),
+      ]);
+      if (!mounted) return;
+      setMatches(matchesData);
+      setStandings(standingsData);
+      setTeams(teamsData);
+      setFinalMatches(finalMatchesData);
+    };
+
+    loadAll();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const activeTab = pathname === "/teams"
@@ -65,58 +124,44 @@ function HomeContent() {
   );
 
   const filteredMatchesByDate = useMemo(() => {
-    const base = matches.filter((m) => {
-      // 1. Check dedicated 'day' field first (New structure)
-      if (typeof m.day === 'number') {
-        return m.day === selectedDate;
-      }
-      
-      // 2. Fallback to old structure (parsing string "08 MEI 19:00")
-      const dayFromTime = parseInt(String(m.time).split(" ")[0], 10);
-      if (!isNaN(dayFromTime)) {
-        return dayFromTime === selectedDate;
-      }
-      
-      const dayFromDate = parseInt(String(m.date).split(" ")[0], 10);
-      if (!isNaN(dayFromDate)) {
-        return dayFromDate === selectedDate;
-      }
+    const base = matches
+      .filter((m) => {
+        // 1. Check dedicated 'day' field first (New structure)
+        if (typeof m.day === 'number') {
+          return m.day === selectedDate;
+        }
+        
+        // 2. Fallback to old structure (parsing string "08 MEI 19:00")
+        const dayFromTime = parseInt(String(m.time).split(" ")[0], 10);
+        if (!isNaN(dayFromTime)) {
+          return dayFromTime === selectedDate;
+        }
+        
+        const dayFromDate = parseInt(String(m.date).split(" ")[0], 10);
+        if (!isNaN(dayFromDate)) {
+          return dayFromDate === selectedDate;
+        }
 
-      return false;
-    });
+        return false;
+      })
+      .sort((a: any, b: any) => Number(a.order ?? 999999) - Number(b.order ?? 999999));
 
-    if (base.length >= 5) return base;
-
-    const dummyPool = [
-      { team1: "AE", team2: "BTR" },
-      { team1: "DEWA", team2: "EVOS" },
-      { team1: "GEEK", team2: "NAVI" },
-      { team1: "ONIC", team2: "RRQ" },
-      { team1: "TLID", team2: "AE" },
-    ];
-
-    const needed = 5 - base.length;
-    const dummies = dummyPool.slice(0, needed).map((pair, idx) => ({
-      id: `dummy-${selectedDate}-${idx}`,
-      phase: "GROUP STAGE",
-      date: `ROUND ${idx + 1}`,
-      day: selectedDate,
-      time: ["13:00", "15:00", "17:00", "19:00", "21:00"][idx] || "13:00",
-      team1: pair.team1,
-      team2: pair.team2,
-      score1: 0,
-      score2: 0,
-      format: "BO1",
-      status: "UPCOMING",
-      __dummy: true,
-    }));
-
-    return [...base, ...dummies];
+    return base;
   }, [matches, selectedDate]);
 
   const onDateChange = (day: number) => {
     router.push(`/matches?date=${day}`);
   };
+
+  const teamLogoMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    teams.forEach((s: any) => {
+      const name = String(s.team || "").toUpperCase().trim();
+      const logo = String(s.logo || "").trim();
+      if (name && logo) map[name] = logo;
+    });
+    return map;
+  }, [teams]);
 
   return (
     <SiteFrame activeTab={activeTab} selectedDate={selectedDate} onDateChange={onDateChange}>
@@ -125,13 +170,14 @@ function HomeContent() {
           <Hero />
         </>
       )}
-      {activeTab === "teams" && <TeamsShowcase teams={standings} />}
+      {activeTab === "teams" && <TeamsShowcase teams={teams} />}
       {activeTab === "groups" && <GroupSection teams={standings} />}
       {activeTab === "matches" && (
         <MatchSchedule
           showDateTime={true}
           title={`JADWAL ${dayName} ${selectedDate} MEI`}
           matches={filteredMatchesByDate}
+          teamLogoMap={teamLogoMap}
         />
       )}
       {activeTab === "roundrobin" && <FinalStageBracket matches={finalMatches} />}

@@ -14,6 +14,12 @@ export default function SiteFrame({
   onDateChange,
   children,
 }: SiteFrameProps) {
+  const sponsors = [
+    { name: "Prima Karya", logo: "https://ik.imagekit.io/7xrur26qt/PRIMA%20KARYA.png" },
+    { name: "PAI", logo: "https://ik.imagekit.io/7xrur26qt/pai.png" },
+    { name: "RMB", logo: "https://ik.imagekit.io/7xrur26qt/rmb.png" },
+  ];
+
   return (
     <div className="page-root">
       <div className="dashboard-wrapper">
@@ -28,6 +34,17 @@ export default function SiteFrame({
         <main className="main-viewport">
           <div className="tab-content-wrapper">{children}</div>
         </main>
+
+        <section className="spx">
+          <div className="spx-inner">
+            <p className="spx-label">Sponsorship By</p>
+            <div className="spx-grid">
+              {sponsors.map((s) => (
+                <img key={s.name} className="spx-logo" src={s.logo} alt={s.name} title={s.name} />
+              ))}
+            </div>
+          </div>
+        </section>
 
         <footer className="ft ft-min">
           <div className="ft-min-inner">

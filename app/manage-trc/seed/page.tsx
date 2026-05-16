@@ -3,11 +3,11 @@ import React, { useState } from 'react';
 import { collection, addDoc, getDocs, query, where, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 const teams = [
-  { id: 1, name: 'PT KKP 3', group: 'A', logo: '1', mp: 0, w: 0, l: 0, pts: 0 },
-  { id: 2, name: 'PT STP 2', group: 'A', logo: '2', mp: 0, w: 0, l: 0, pts: 0 },
-  { id: 3, name: 'PT MS1', group: 'A', logo: '3', mp: 0, w: 0, l: 0, pts: 0 },
-  { id: 4, name: 'TC LAB', group: 'A', logo: '4', mp: 0, w: 0, l: 0, pts: 0 },
-  { id: 5, name: 'PT BSK 1', group: 'A', logo: '5', mp: 0, w: 0, l: 0, pts: 0 },
+  { id: 1, name: 'PT BSK 2 B', group: 'A', logo: '1', mp: 0, w: 0, l: 0, pts: 0 },
+  { id: 2, name: 'PT KKP 1 B', group: 'A', logo: '2', mp: 0, w: 0, l: 0, pts: 0 },
+  { id: 3, name: 'PT RHS 1', group: 'A', logo: '3', mp: 0, w: 0, l: 0, pts: 0 },
+  { id: 4, name: 'PT BSK 2 A', group: 'A', logo: '4', mp: 0, w: 0, l: 0, pts: 0 },
+  { id: 5, name: 'PT MS 1', group: 'A', logo: '5', mp: 0, w: 0, l: 0, pts: 0 },
   { id: 6, name: 'RO IC', group: 'B', logo: '1', mp: 0, w: 0, l: 0, pts: 0 },
   { id: 7, name: 'PT RHS 2', group: 'B', logo: '2', mp: 0, w: 0, l: 0, pts: 0 },
   { id: 8, name: 'PT MS3', group: 'B', logo: '3', mp: 0, w: 0, l: 0, pts: 0 },
