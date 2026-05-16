@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 
 const NAV = [
   { id: "dashboard", label: "Beranda", href: "/" },
+  { id: "teams", label: "Tim", href: "/teams" },
   { id: "matches", label: "Pertandingan", href: "/matches" },
   { id: "groups", label: "Klasemen Grup Stage", href: "/groupstage" },
   { id: "roundrobin", label: "Klasemen Final Stage", href: "/finalstage" },
@@ -26,7 +27,6 @@ const BrandLogo = () => {
       </svg>
     );
   }
-
   return <img src="/logo.png" alt="The Rock Cafe" width={46} height={46} onError={() => setErr(true)} className="brand-logo-img" />;
 };
 
@@ -95,20 +95,12 @@ export default function Navbar({
             return (
               <div key={item.id} className="nav-item-wrap">
                 <button
-                  ref={(el) => {
-                    refs.current[item.id] = el;
-                  }}
+                  ref={(el) => { refs.current[item.id] = el; }}
                   onClick={() => {
                     if (isMatches) {
                       if (isAct) setDateOpen(!dateOpen);
-                      else {
-                        gotoRoute(item.id, item.href);
-                        setDateOpen(true);
-                      }
-                    } else {
-                      gotoRoute(item.id, item.href);
-                      setDateOpen(false);
-                    }
+                      else { gotoRoute(item.id, item.href); setDateOpen(true); }
+                    } else { gotoRoute(item.id, item.href); setDateOpen(false); }
                   }}
                   className={`nav-btn ${isAct ? "nav-btn-on" : ""}`}
                 >
@@ -148,7 +140,6 @@ export default function Navbar({
 
         <div className="hdr-right">
           <span className="season-tag"><span className="season-gem">•</span>Season 2026</span>
-          <span className="live-badge"><span className="live-dot" /><span>LIVE</span></span>
           <button className={`burger ${mob ? "burger-open" : ""}`} onClick={() => setMob((o) => !o)} aria-label="Toggle menu"><span /><span /><span /></button>
         </div>
       </div>
@@ -215,4 +206,3 @@ export default function Navbar({
     </header>
   );
 }
-

@@ -50,8 +50,8 @@ export const Hero = () => {
           position: absolute;
           inset: 0;
           background:
-            radial-gradient(circle at 85% 40%, rgba(37,99,235,0.04), transparent 40%),
-            radial-gradient(circle at 15% 30%, rgba(37,99,235,0.03), transparent 30%);
+            radial-gradient(circle at 85% 40%, rgba(122,0,0,0.04), transparent 40%),
+            radial-gradient(circle at 15% 30%, rgba(122,0,0,0.03), transparent 30%);
           pointer-events: none;
         }
         .content {
@@ -99,7 +99,7 @@ export const Hero = () => {
           width: 100%;
         }
         .subtext {
-          color: #2563eb;
+          color: #7a0000;
           font-family: var(--font-heading);
           font-size: 13px;
           font-weight: 800;

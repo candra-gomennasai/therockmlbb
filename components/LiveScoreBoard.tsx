@@ -15,28 +15,28 @@ const LiveScoreBoard = ({ match }: { match: any }) => {
 
         <div className="stage-body">
           <div className="competitor left">
-             <div className="team-shield cyan-border">A</div>
+             <div className="team-shield cyan-border">{match.team1?.[0]}</div>
              <div className="info">
-                <h2 className="team-title">{match.teamA}</h2>
+                <h2 className="team-title">{match.team1}</h2>
                 <div className="team-tag cyan">TIM BIRU</div>
              </div>
           </div>
 
           <div className="live-clock-score">
              <div className="score-row">
-                <span className="digit cyan-text">2</span>
+                <span className="digit cyan-text">{match.score1 ?? 0}</span>
                 <div className="vs-panel">
                    <div className="vs-txt">VS</div>
-                   <div className="timer-brutal">18:42</div>
+                   <div className="timer-brutal">LIVE</div>
                 </div>
-                <span className="digit">1</span>
+                <span className="digit">{match.score2 ?? 0}</span>
              </div>
           </div>
 
           <div className="competitor right">
-             <div className="team-shield purple-border">B</div>
+             <div className="team-shield purple-border">{match.team2?.[0]}</div>
              <div className="info">
-                <h2 className="team-title">{match.teamB}</h2>
+                <h2 className="team-title">{match.team2}</h2>
                 <div className="team-tag purple">TIM MERAH</div>
              </div>
           </div>

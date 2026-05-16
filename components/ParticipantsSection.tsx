@@ -21,6 +21,7 @@ const DEFAULT_ACCENT = { color: "#94a3b8", glow: "rgba(148,163,184,0.18)" };
 
 const ParticipantsSection = ({ teams }: { teams: any[] }) => {
   const getOrgKey = (name: string) => {
+    if (!name) return "LAINNYA";
     const parts = name.trim().split(/\s+/);
     if (parts.length >= 2 && parts[0].toUpperCase() === "PT") {
       const second = parts[1].toUpperCase().replace(/[0-9]/g, "");
@@ -33,7 +34,8 @@ const ParticipantsSection = ({ teams }: { teams: any[] }) => {
   };
 
   const groupedByOrg = teams.reduce<Record<string, any[]>>((acc, team) => {
-    const key = getOrgKey(team.name);
+    const teamName = team.team || team.name || "TIM BARU";
+    const key = getOrgKey(teamName);
     if (!acc[key]) acc[key] = [];
     acc[key].push(team);
     return acc;
@@ -67,14 +69,14 @@ const ParticipantsSection = ({ teams }: { teams: any[] }) => {
             const acc = ORG_ACCENTS[org] ?? DEFAULT_ACCENT;
             const groupedTeams = groupedByOrg[org].sort((a, b) => {
               const numFromName = (n: string) => {
-                const m = n.match(/(\d+)\s*$/);
+                const m = n?.match(/(\d+)\s*$/);
                 return m ? Number(m[1]) : Infinity;
               };
-              const nA = numFromName(a.name), nB = numFromName(b.name);
+              const nA = numFromName(a.team || a.name), nB = numFromName(b.team || b.name);
               if (nA !== nB) return nA - nB;
               const numA = Number(a.logo), numB = Number(b.logo);
               if (!isNaN(numA) && !isNaN(numB) && numA !== numB) return numA - numB;
-              return a.name.localeCompare(b.name);
+              return (a.team || a.name || '').localeCompare(b.team || b.name || '');
             });
 
             return (
@@ -107,7 +109,7 @@ const ParticipantsSection = ({ teams }: { teams: any[] }) => {
                         {/* rank mark */}
                         <span className="team-rank">{String(idx + 1).padStart(2, "0")}</span>
                         {/* name */}
-                        <span className="team-name">{team.name}</span>
+                        <span className="team-name">{team.team || team.name}</span>
                         {/* seed chip */}
                         <span className="team-seed">{team.logo}</span>
                       </div>
