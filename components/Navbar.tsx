@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const NAV = [
   { id: "dashboard", label: "Beranda", href: "/" },
@@ -28,7 +29,17 @@ const BrandLogo = () => {
       </svg>
     );
   }
-  return <img src="/logo.png" alt="The Rock Cafe" width={46} height={46} onError={() => setErr(true)} className="brand-logo-img" />;
+  return (
+    <Image
+      src="/logo.png"
+      alt="The Rock Cafe"
+      width={46}
+      height={46}
+      sizes="46px"
+      onError={() => setErr(true)}
+      className="brand-logo-img"
+    />
+  );
 };
 
 export default function Navbar({

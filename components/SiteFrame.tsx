@@ -1,5 +1,6 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
+import Image from "next/image";
 
 type SiteFrameProps = {
   activeTab: "dashboard" | "teams" | "matches" | "groups" | "roundrobin" | "champion";
@@ -14,6 +15,9 @@ export default function SiteFrame({
   onDateChange,
   children,
 }: SiteFrameProps) {
+  const optimizeImageKit = (url: string, width: number) =>
+    `${url}${url.includes("?") ? "&" : "?"}tr=w-${width},h-${width},fo-auto,f-webp,q-75`;
+
   const sponsors = [
     { name: "Prima Karya", logo: "https://ik.imagekit.io/7xrur26qt/PRIMA%20KARYA.png" },
     { name: "PAI", logo: "https://ik.imagekit.io/7xrur26qt/pai.png" },
@@ -40,7 +44,16 @@ export default function SiteFrame({
             <p className="spx-label">Sponsorship By</p>
             <div className="spx-grid">
               {sponsors.map((s) => (
-                <img key={s.name} className="spx-logo" src={s.logo} alt={s.name} title={s.name} />
+                <Image
+                  key={s.name}
+                  className="spx-logo"
+                  src={optimizeImageKit(s.logo, 220)}
+                  alt={s.name}
+                  title={s.name}
+                  width={220}
+                  height={72}
+                  sizes="(max-width: 900px) 33vw, 220px"
+                />
               ))}
             </div>
           </div>

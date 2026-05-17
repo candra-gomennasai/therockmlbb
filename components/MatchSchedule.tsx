@@ -1,5 +1,6 @@
 "use client";
 import React from 'react';
+import Image from "next/image";
 
 const TEAM_LOGOS: Record<string, string> = {
   AE: "https://ik.imagekit.io/7xrur26qt/ae-256.png",
@@ -30,6 +31,14 @@ function getTeamLogo(teamName: string, explicitLogoUrl?: string, teamLogoMap?: R
   if (compact.includes("RRQ")) return TEAM_LOGOS.RRQ;
   if (compact.includes("TLID") || compact.includes("LIQUID")) return TEAM_LOGOS.TLID;
   return `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(teamName || "team")}`;
+}
+
+function optimizeImageSrc(url: string, width: number) {
+  if (!url) return url;
+  if (url.includes("ik.imagekit.io")) {
+    return `${url}${url.includes("?") ? "&" : "?"}tr=w-${width},h-${width},fo-auto,f-webp,q-75`;
+  }
+  return url;
 }
 
 const MatchCard = ({ match, showDateTime = true, teamLogoMap = {} }: { match: any; showDateTime?: boolean; teamLogoMap?: Record<string, string> }) => {
@@ -74,9 +83,12 @@ const MatchCard = ({ match, showDateTime = true, teamLogoMap = {} }: { match: an
 
         <div className="ms-team-box" style={{ position: 'relative', zIndex: 2 }}>
           <div className="ms-team-logo-gem">
-             <img
-               src={getTeamLogo(match.team1, match.team1Logo, teamLogoMap)}
+             <Image
+               src={optimizeImageSrc(getTeamLogo(match.team1, match.team1Logo, teamLogoMap), 128)}
                alt={match.team1 || "team 1"}
+               width={72}
+               height={72}
+               sizes="72px"
                style={{ transform: `scale(${Number(match.team1LogoScale ?? 1) || 1})` }}
              />
           </div>
@@ -98,9 +110,12 @@ const MatchCard = ({ match, showDateTime = true, teamLogoMap = {} }: { match: an
 
         <div className="ms-team-box" style={{ position: 'relative', zIndex: 2 }}>
           <div className="ms-team-logo-gem">
-             <img
-               src={getTeamLogo(match.team2, match.team2Logo, teamLogoMap)}
+             <Image
+               src={optimizeImageSrc(getTeamLogo(match.team2, match.team2Logo, teamLogoMap), 128)}
                alt={match.team2 || "team 2"}
+               width={72}
+               height={72}
+               sizes="72px"
                style={{ transform: `scale(${Number(match.team2LogoScale ?? 1) || 1})` }}
              />
           </div>

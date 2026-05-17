@@ -1,6 +1,21 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import BfCacheBuster from "@/components/BfCacheBuster";
+import { Lexend, Space_Grotesk } from "next/font/google";
+
+const fontMain = Lexend({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-main",
+  display: "swap",
+});
+
+const fontHeading = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-heading",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "The Rock Cafe MLBB Tournament",
@@ -15,6 +30,10 @@ export default function RootLayout({
   return (
     <html lang="id">
       <head>
+        <link rel="preconnect" href="https://firestore.googleapis.com" />
+        <link rel="preconnect" href="https://studio-9225483331-f0a66.firebaseapp.com" />
+        <link rel="dns-prefetch" href="//firestore.googleapis.com" />
+        <link rel="dns-prefetch" href="//studio-9225483331-f0a66.firebaseapp.com" />
         <style dangerouslySetInnerHTML={{ __html: `
           /* CRITICAL: Preloader — injected server-side before any JS */
           #site-preloader {
@@ -78,11 +97,11 @@ export default function RootLayout({
           @keyframes plBarFill { to { transform: translateX(0); } }
         `}} />
       </head>
-      <body>
+      <body className={`${fontMain.variable} ${fontHeading.variable}`}>
         {/* Server-rendered preloader — visible BEFORE any JS runs */}
         <div id="site-preloader" aria-hidden="true">
           <div className="pl-logo-box">
-            <img src="/logo.png" alt="" />
+            <img src="/logo.png" alt="" width="60" height="60" loading="eager" decoding="async" />
             <div className="pl-ring" />
           </div>
           <div className="pl-name">

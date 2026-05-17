@@ -1,5 +1,6 @@
 "use client";
 import React from 'react';
+import Image from "next/image";
 
 export const Hero = () => {
   const [ninjaError, setNinjaError] = React.useState(false);
@@ -26,7 +27,17 @@ export const Hero = () => {
           <div className="hero-art">
             <div className="aura" />
             {!ninjaError ? (
-              <img className="fighter" src="/ninja.png" alt="Ninja" onError={() => setNinjaError(true)} />
+              <Image
+                className="fighter"
+                src="/ninja.png"
+                alt="Ninja"
+                width={640}
+                height={640}
+                priority
+                fetchPriority="high"
+                sizes="(max-width: 900px) 90vw, 640px"
+                onError={() => setNinjaError(true)}
+              />
             ) : (
               <div className="fighter-fallback">NINJA ART</div>
             )}
@@ -34,8 +45,28 @@ export const Hero = () => {
         </div>
       </div>
 
-      {!shurikenError && <img className="shuriken one" src="/shuriken.png" alt="" onError={() => setShurikenError(true)} />}
-      {!shurikenError && <img className="shuriken two" src="/shuriken.png" alt="" onError={() => setShurikenError(true)} />}
+      {!shurikenError && (
+        <Image
+          className="shuriken one"
+          src="/shuriken.png"
+          alt=""
+          width={72}
+          height={72}
+          sizes="72px"
+          onError={() => setShurikenError(true)}
+        />
+      )}
+      {!shurikenError && (
+        <Image
+          className="shuriken two"
+          src="/shuriken.png"
+          alt=""
+          width={72}
+          height={72}
+          sizes="72px"
+          onError={() => setShurikenError(true)}
+        />
+      )}
 
       <style jsx>{`
         .hero-clone {
@@ -167,11 +198,11 @@ export const Hero = () => {
           object-fit: contain;
           opacity: 0.76;
           filter: drop-shadow(0 10px 20px rgba(0,0,0,0.55));
-          animation: shurikenSpin 8.5s linear infinite, shurikenDrift 3.6s ease-in-out infinite;
+          animation: shurikenSpin 8.5s linear infinite;
           will-change: transform;
         }
         .shuriken.one { left: 10%; top: 17%; }
-        .shuriken.two { left: 52%; bottom: 8%; animation-duration: 10s, 4.2s; }
+        .shuriken.two { left: 52%; bottom: 8%; animation-duration: 10s; }
 
         @keyframes ninjaFloat {
           0%, 100% { transform: translate(8%, 4%) rotate(0deg); }
@@ -180,10 +211,6 @@ export const Hero = () => {
         @keyframes shurikenSpin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
-        }
-        @keyframes shurikenDrift {
-          0%, 100% { margin-top: 0; }
-          50% { margin-top: -10px; }
         }
 
         @media (max-width: 900px) {
@@ -213,7 +240,7 @@ export const Hero = () => {
             height: 46px;
           }
           .shuriken.one { left: 8%; top: 14%; }
-          .shuriken.two { left: auto; right: 8%; bottom: 8%; }
+          .shuriken.two { left: auto; right: 8%; bottom: 8%; animation-duration: 10s; }
           @keyframes ninjaFloatMobile {
             0%, 100% { transform: translate(0, 4%) rotate(0deg); }
             50% { transform: translate(0, 1%) rotate(-0.8deg); }

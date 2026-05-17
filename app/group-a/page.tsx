@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { collection, onSnapshot, query } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { db } from "@/lib/firebase-db";
 
 type Standing = {
   id: string;
@@ -99,4 +99,3 @@ export default function GroupAPage() {
     </main>
   );
 }
-

@@ -8,7 +8,7 @@ import TeamsShowcase from "@/components/TeamsShowcase";
 import FinalStageBracket from "@/components/FinalStageBracket";
 import ChampionPodium from "@/components/ChampionPodium";
 import { collection, doc, getDoc, getDocs, onSnapshot, query } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { db } from '@/lib/firebase-db';
 import { useEffect, useState, useMemo, Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 

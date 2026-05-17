@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 
 type TeamLike = {
   id?: string;
@@ -65,6 +66,15 @@ function getCapClass(label: string): string {
   return "";
 }
 
+function optimizeLogo(url: string) {
+  const src = String(url || "").trim();
+  if (!src) return src;
+  if (src.includes("ik.imagekit.io")) {
+    return `${src}${src.includes("?") ? "&" : "?"}tr=w-240,h-240,fo-auto,f-webp,q-76`;
+  }
+  return src;
+}
+
 export default function TeamsShowcase({ teams }: { teams: TeamLike[] }) {
   const normalized = normalizeTeams(teams || []);
 
@@ -82,9 +92,12 @@ export default function TeamsShowcase({ teams }: { teams: TeamLike[] }) {
               {item.label.toUpperCase()}
             </div>
             <div className="team-body">
-              <img
-                src={item.logo || LOGOS[idx] || `https://api.dicebear.com/7.x/identicon/svg?seed=${item.label}`}
+              <Image
+                src={optimizeLogo(item.logo || LOGOS[idx] || `https://api.dicebear.com/7.x/identicon/svg?seed=${item.label}`)}
                 alt={item.label}
+                width={170}
+                height={170}
+                sizes="(max-width: 768px) 96px, 170px"
                 style={{ transform: `scale(${item.logoScale && item.logoScale > 0 ? item.logoScale : getDefaultScale(item.label, item.logo || "")})` }}
               />
             </div>
