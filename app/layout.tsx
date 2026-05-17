@@ -30,10 +30,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <head>
-        <link rel="preconnect" href="https://firestore.googleapis.com" />
-        <link rel="preconnect" href="https://studio-9225483331-f0a66.firebaseapp.com" />
-        <link rel="dns-prefetch" href="//firestore.googleapis.com" />
-        <link rel="dns-prefetch" href="//studio-9225483331-f0a66.firebaseapp.com" />
+
         <style dangerouslySetInnerHTML={{ __html: `
           /* CRITICAL: Preloader — injected server-side before any JS */
           #site-preloader {
@@ -48,11 +45,14 @@ export default function RootLayout({
             gap: 24px;
             /* Fade out after 1.5s, over 0.7s */
             animation: sitePreloaderFade 0.7s ease 1.5s forwards;
-            pointer-events: all;
+            pointer-events: none;
+          }
+          #site-preloader > * {
+            pointer-events: auto;
           }
           @keyframes sitePreloaderFade {
             0%   { opacity: 1; }
-            100% { opacity: 0; pointer-events: none; visibility: hidden; }
+            100% { opacity: 0; }
           }
           #site-preloader .pl-logo-box {
             position: relative;
@@ -101,7 +101,7 @@ export default function RootLayout({
         {/* Server-rendered preloader — visible BEFORE any JS runs */}
         <div id="site-preloader" aria-hidden="true">
           <div className="pl-logo-box">
-            <img src="/logo.png" alt="" width="60" height="60" loading="eager" decoding="async" />
+            <img src="/_next/image?url=%2Flogo.png&w=128&q=75" alt="" width="60" height="60" loading="eager" fetchPriority="high" decoding="async" />
             <div className="pl-ring" />
           </div>
           <div className="pl-name">

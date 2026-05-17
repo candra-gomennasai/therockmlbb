@@ -35,7 +35,7 @@ export const Hero = () => {
                 height={640}
                 priority
                 fetchPriority="high"
-                sizes="(max-width: 900px) 90vw, 640px"
+                sizes="(max-width: 600px) 380px, (max-width: 900px) 500px, 640px"
                 onError={() => setNinjaError(true)}
               />
             ) : (
