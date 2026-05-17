@@ -6,13 +6,21 @@ import MatchSchedule from "@/components/MatchSchedule";
 import SiteFrame from "@/components/SiteFrame";
 import TeamsShowcase from "@/components/TeamsShowcase";
 import FinalStageBracket from "@/components/FinalStageBracket";
-import { collection, doc, getDoc, getDocs, query } from 'firebase/firestore';
+import ChampionPodium from "@/components/ChampionPodium";
+import { collection, doc, getDoc, getDocs, onSnapshot, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useEffect, useState, useMemo, Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const VALID_DATES = [8, 9, 15, 16, 22, 23, 29, 30];
 const PUBLIC_CACHE_TTL_MS = 5 * 60 * 1000;
+
+function normalizeItems(collectionName: string, items: any[]) {
+  return items.map((item: any, idx: number) => ({
+    id: String(item?.id || `${collectionName}-${idx}`),
+    ...item,
+  }));
+}
 
 async function loadCollectionWithTTL(key: string, collectionName: string) {
   const now = Date.now();
@@ -35,10 +43,7 @@ async function loadCollectionWithTTL(key: string, collectionName: string) {
   if (singleDoc.exists()) {
     const payload = singleDoc.data() as { items?: any[] };
     if (Array.isArray(payload?.items)) {
-      data = payload.items.map((item: any, idx: number) => ({
-        id: String(item?.id || `${collectionName}-${idx}`),
-        ...item,
-      }));
+      data = normalizeItems(collectionName, payload.items);
     }
   }
 
@@ -65,6 +70,7 @@ function HomeContent() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const tabParam = String(searchParams.get("tab") || "").toLowerCase();
   const dateParam = Number(searchParams.get("date") || "8");
   const selectedDate = VALID_DATES.includes(dateParam) ? dateParam : 8;
 
@@ -72,6 +78,8 @@ function HomeContent() {
   const [standings, setStandings] = useState<any[]>([]);
   const [teams, setTeams] = useState<any[]>([]);
   const [finalMatches, setFinalMatches] = useState<any[]>([]);
+  const [finalBracketImageUrl, setFinalBracketImageUrl] = useState<string>("/bracket.png");
+  const [championImageUrl, setChampionImageUrl] = useState<string>("");
 
   useEffect(() => {
     let mounted = true;
@@ -91,12 +99,80 @@ function HomeContent() {
     };
 
     loadAll();
+
+    const unsubMatches = onSnapshot(doc(db, "matches", "data"), (snap) => {
+      if (!mounted || !snap.exists()) return;
+      const payload = snap.data() as { items?: any[] };
+      if (!Array.isArray(payload?.items)) return;
+      const normalized = normalizeItems("matches", payload.items);
+      setMatches(normalized);
+      try {
+        localStorage.setItem(
+          "trc-cache:matches",
+          JSON.stringify({ expiresAt: Date.now() + PUBLIC_CACHE_TTL_MS, data: normalized })
+        );
+      } catch {}
+    });
+
+    const unsubStandings = onSnapshot(doc(db, "standings", "data"), (snap) => {
+      if (!mounted || !snap.exists()) return;
+      const payload = snap.data() as { items?: any[] };
+      if (!Array.isArray(payload?.items)) return;
+      const normalized = normalizeItems("standings", payload.items);
+      setStandings(normalized);
+      try {
+        localStorage.setItem(
+          "trc-cache:standings",
+          JSON.stringify({ expiresAt: Date.now() + PUBLIC_CACHE_TTL_MS, data: normalized })
+        );
+      } catch {}
+    });
+
+    const unsubTeams = onSnapshot(doc(db, "teams", "data"), (snap) => {
+      if (!mounted || !snap.exists()) return;
+      const payload = snap.data() as { items?: any[] };
+      if (!Array.isArray(payload?.items)) return;
+      const normalized = normalizeItems("teams", payload.items);
+      setTeams(normalized);
+      try {
+        localStorage.setItem(
+          "trc-cache:teams",
+          JSON.stringify({ expiresAt: Date.now() + PUBLIC_CACHE_TTL_MS, data: normalized })
+        );
+      } catch {}
+    });
+
+    const unsubFinal = onSnapshot(doc(db, "finalMatches", "data"), (snap) => {
+      if (!mounted || !snap.exists()) return;
+      const payload = snap.data() as { items?: any[]; bracketImageUrl?: string; championImageUrl?: string };
+      if (Array.isArray(payload?.items)) {
+        const normalized = normalizeItems("finalMatches", payload.items);
+        setFinalMatches(normalized);
+        try {
+          localStorage.setItem(
+            "trc-cache:finalMatches",
+            JSON.stringify({ expiresAt: Date.now() + PUBLIC_CACHE_TTL_MS, data: normalized })
+          );
+        } catch {}
+      }
+      const url = String(payload?.bracketImageUrl || "").trim();
+      setFinalBracketImageUrl(url || "/bracket.png");
+      const cUrl = String(payload?.championImageUrl || "").trim();
+      setChampionImageUrl(cUrl);
+    });
+
     return () => {
       mounted = false;
+      unsubMatches();
+      unsubStandings();
+      unsubTeams();
+      unsubFinal();
     };
   }, []);
 
-  const activeTab = pathname === "/teams"
+  const activeTab = tabParam === "champion"
+    ? "champion"
+    : pathname === "/teams"
     ? "teams"
     : pathname === "/groupstage"
     ? "groups"
@@ -104,6 +180,8 @@ function HomeContent() {
     ? "matches"
     : pathname === "/finalstage"
     ? "roundrobin"
+    : pathname === "/champion"
+    ? "champion"
     : "dashboard";
 
   const dayName = useMemo(
@@ -180,7 +258,8 @@ function HomeContent() {
           teamLogoMap={teamLogoMap}
         />
       )}
-      {activeTab === "roundrobin" && <FinalStageBracket matches={finalMatches} />}
+      {activeTab === "roundrobin" && <FinalStageBracket matches={finalMatches} imageUrl={finalBracketImageUrl} />}
+      {activeTab === "champion" && <ChampionPodium teams={finalMatches} imageUrl={championImageUrl} />}
     </SiteFrame>
   );
 }

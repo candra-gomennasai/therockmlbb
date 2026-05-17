@@ -76,74 +76,43 @@ function MatchCard({ m }: { m: FinalMatch }) {
   const dateText = String(m.date || "").trim() || "JUMAT, 08 MEI 2026";
 
   return (
-    <article className="fb-card">
-      <header className="fb-card-head">
-        <div className="ms-tags-row">
-          <span className="ms-tag">{m.round || "MATCH"}</span>
+    <div className="tb-match">
+      <div className="tb-head">
+        <span className="tb-pill">{m.round || "MATCH"}</span>
+        <span className="tb-time">{m.time || "TBA"}</span>
+      </div>
+      <div className="tb-body">
+        <div className="tb-team">
+          <img className="tb-logo" src={team1Logo} alt={team1} style={{ transform: `scale(${scale1})` }} />
+          <span className="tb-name">{team1}</span>
         </div>
-        <span className="ms-time-tag">{m.time || "TBA"}</span>
-      </header>
-      <div className="fb-vs">
-        <div className="fb-side fb-side-left">
-          <div className="fb-logo-wrap">
-            <img className="fb-team-logo" src={team1Logo} alt={team1} style={{ transform: `scale(${scale1})` }} />
-          </div>
-          <span className="fb-team fb-team-left">{team1}</span>
-        </div>
-        <div className="fb-score-box">
-          <span className="fb-vs-mid">VS</span>
-          <div className="fb-score">
+        <div className="tb-center">
+          <span className="tb-vs">VS</span>
+          <div className="tb-score">
             <strong>{m.score1 ?? 0}</strong>
             <span>-</span>
             <strong>{m.score2 ?? 0}</strong>
           </div>
         </div>
-        <div className="fb-side fb-side-right">
-          <div className="fb-logo-wrap">
-            <img className="fb-team-logo" src={team2Logo} alt={team2} style={{ transform: `scale(${scale2})` }} />
-          </div>
-          <span className="fb-team fb-team-right">{team2}</span>
+        <div className="tb-team tb-team-right">
+          <span className="tb-name">{team2}</span>
+          <img className="tb-logo" src={team2Logo} alt={team2} style={{ transform: `scale(${scale2})` }} />
         </div>
       </div>
-      <div className="fb-date"><span className="ms-date-val">{dateText}</span></div>
-    </article>
+      <div className="tb-foot">{dateText}</div>
+    </div>
   );
 }
 
-export default function FinalStageBracket({ matches }: { matches: FinalMatch[] }) {
-  const b = bucketMatches(matches || []);
-
+export default function FinalStageBracket({ matches, imageUrl }: { matches: FinalMatch[]; imageUrl?: string }) {
   return (
     <section className="fb-wrap">
       <div className="fb-head">
         <span className="fb-eyebrow">◆ Championship Bracket</span>
         <h2>Final Stage</h2>
       </div>
-
-      <div className="fb-knockout">
-        <div className="fb-col fb-col-qf">
-          <div className="fb-qf-pair">
-            <div className="fb-node fb-node-right"><MatchCard m={b.quarter[0]} /></div>
-            <div className="fb-node fb-node-right"><MatchCard m={b.quarter[1]} /></div>
-          </div>
-          <div className="fb-qf-pair">
-            <div className="fb-node fb-node-right"><MatchCard m={b.quarter[2]} /></div>
-            <div className="fb-node fb-node-right"><MatchCard m={b.quarter[3]} /></div>
-          </div>
-        </div>
-
-        <div className="fb-col fb-col-sf">
-          <div className="fb-sf-stack">
-            <div className="fb-node fb-node-left fb-node-right"><MatchCard m={b.semi[0]} /></div>
-            <div className="fb-node fb-node-left fb-node-right"><MatchCard m={b.semi[1]} /></div>
-          </div>
-        </div>
-
-        <div className="fb-col fb-col-final">
-          <div className="fb-final-wrap">
-            <div className="fb-node fb-node-left"><MatchCard m={b.final[0]} /></div>
-          </div>
-        </div>
+      <div className="fb-image-only">
+        <img src={String(imageUrl || "").trim() || "/bracket.png"} alt="Final Stage Bracket" />
       </div>
     </section>
   );

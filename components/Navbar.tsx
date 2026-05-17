@@ -7,7 +7,8 @@ const NAV = [
   { id: "teams", label: "Tim", href: "/teams" },
   { id: "matches", label: "Pertandingan", href: "/matches" },
   { id: "groups", label: "Klasemen Grup Stage", href: "/groupstage" },
-  { id: "roundrobin", label: "Klasemen Final Stage", href: "/finalstage" },
+  { id: "roundrobin", label: "Final Stage", href: "/finalstage" },
+  { id: "champion", label: "Juara", href: "/champion" },
 ] as const;
 
 const BrandLogo = () => {

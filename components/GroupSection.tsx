@@ -14,12 +14,10 @@ const GroupTable = ({ group, teams }: { group: string; teams: any[] }) => {
   const sorted = [...teams].sort((a, b) => b.points - a.points || (b.tb || 0) - (a.tb || 0));
 
   const COLS = [
-    { key: "played", label: "MP" },
-    { key: "won",    label: "W"  },
-    { key: "lost",   label: "L"  },
-    { key: "tb",     label: "TB" },
-    { key: "st",     label: "ST" },
-    { key: "points", label: "PTS", accent: true },
+    { key: "played", label: "MATCHES"  },
+    { key: "won",    label: "WIN"  },
+    { key: "lost",   label: "LOSE"  },
+    { key: "points", label: "POINTS", accent: true },
   ];
 
   return (

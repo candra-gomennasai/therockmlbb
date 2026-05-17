@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
       { source: "/matches", destination: "/" },
       { source: "/groupstage", destination: "/" },
       { source: "/finalstage", destination: "/" },
+      { source: "/champion", destination: "/?tab=champion" },
     ];
   },
 };

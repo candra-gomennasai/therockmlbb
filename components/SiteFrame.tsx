@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "@/components/Navbar";
 
 type SiteFrameProps = {
-  activeTab: "dashboard" | "teams" | "matches" | "groups" | "roundrobin";
+  activeTab: "dashboard" | "teams" | "matches" | "groups" | "roundrobin" | "champion";
   selectedDate?: number;
   onDateChange?: (day: number) => void;
   children: React.ReactNode;
