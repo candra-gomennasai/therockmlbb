@@ -253,7 +253,8 @@ function HomeContent() {
       {activeTab === "matches" && (
         <MatchSchedule
           showDateTime={true}
-          title={`JADWAL ${dayName} ${selectedDate} MEI`}
+          title="PERTANDINGAN"
+          subtitle={`JADWAL ${dayName} ${selectedDate} MEI 2026`}
           matches={filteredMatchesByDate}
           teamLogoMap={teamLogoMap}
         />

@@ -45,14 +45,11 @@ export default function RootLayout({
             gap: 24px;
             /* Fade out after 1.5s, over 0.7s */
             animation: sitePreloaderFade 0.7s ease 1.5s forwards;
-            pointer-events: none;
-          }
-          #site-preloader > * {
-            pointer-events: auto;
+            pointer-events: all;
           }
           @keyframes sitePreloaderFade {
-            0%   { opacity: 1; }
-            100% { opacity: 0; }
+            0%   { opacity: 1; visibility: visible; }
+            100% { opacity: 0; visibility: hidden; pointer-events: none; }
           }
           #site-preloader .pl-logo-box {
             position: relative;

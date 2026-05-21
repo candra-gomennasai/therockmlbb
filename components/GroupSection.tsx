@@ -69,16 +69,8 @@ const GroupSection = ({ teams }: { teams: any[] }) => {
 
   return (
     <section className="gs-section">
-      <div className="gs-header">
-        <span className="gs-eyebrow">◆ Klasemen</span>
-        <div className="gs-title-row">
-          <h2 className="gs-title">Group Stage</h2>
-          <div className="gs-status-badge">
-            <span className="gs-status-dot" />
-            HASIL SEMENTARA
-          </div>
-          <div className="gs-title-line" />
-        </div>
+      <div className="teams-head">
+        <h2 className="teams-title">Group Stage</h2>
       </div>
 
       <div className="gs-legend">

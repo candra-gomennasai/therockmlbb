@@ -194,15 +194,12 @@ const MatchCard = ({ match, showDateTime = true, teamLogoMap = {} }: { match: an
 
 const DATES = [8, 9, 15, 16, 22, 23, 29, 30];
 
-const MatchSchedule = ({ matches, title = 'JADWAL', showDateTime = true, teamLogoMap = {} }: { matches: any[]; title?: string; showDateTime?: boolean; teamLogoMap?: Record<string, string>; }) => {
+const MatchSchedule = ({ matches, title = 'PERTANDINGAN', subtitle, showDateTime = true, teamLogoMap = {} }: { matches: any[]; title?: string; subtitle?: string; showDateTime?: boolean; teamLogoMap?: Record<string, string>; }) => {
   return (
     <section className="ms-section">
-      <div className="ms-header">
-        <span className="ms-eyebrow">◆ MATCH SCHEDULE</span>
-        <div className="ms-title-row">
-          <h2 className="ms-title">{title}</h2>
-          <div className="ms-title-line" />
-        </div>
+      <div className="teams-head">
+        <h2 className="teams-title">{title}</h2>
+        {subtitle && <p className="ms-subtitle">{subtitle}</p>}
       </div>
       <div className="ms-grid">
         {matches.map(m => <MatchCard key={m.id} match={m} showDateTime={showDateTime} teamLogoMap={teamLogoMap} />)}
@@ -210,6 +207,15 @@ const MatchSchedule = ({ matches, title = 'JADWAL', showDateTime = true, teamLog
       </div>
       <style jsx>{`
         .ms-empty { grid-column: 1 / -1; text-align: center; padding: 60px; color: #94a3b8; font-weight: 800; font-size: 0.8rem; letter-spacing: 0.1em; }
+        .ms-subtitle {
+          margin: 6px 0 0 0;
+          font-family: var(--font-heading);
+          font-size: 0.85rem;
+          font-weight: 800;
+          color: #7a0000;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+        }
       `}</style>
     </section>
   );

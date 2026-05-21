@@ -14,9 +14,8 @@ export default function FinalStageBracket({ imageUrl }: { matches?: any[]; image
   const src = optimizeBracketSrc(String(imageUrl || ""));
   return (
     <section className="fb-wrap">
-      <div className="fb-head">
-        <span className="fb-eyebrow">◆ Championship Bracket</span>
-        <h2>Final Stage</h2>
+      <div className="teams-head">
+        <h2 className="teams-title">Final Stage</h2>
       </div>
       <div className="fb-image-only">
         <Image
