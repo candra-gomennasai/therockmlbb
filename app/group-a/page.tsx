@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { collection, onSnapshot, query } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase-db";
 
 type Standing = {
@@ -24,11 +24,13 @@ export default function GroupAPage() {
   const [matches, setMatches] = useState<Match[]>([]);
 
   useEffect(() => {
-    const unsubStandings = onSnapshot(query(collection(db, "standings")), (snap) => {
-      setStandings(snap.docs.map((doc) => ({ id: doc.id, ...(doc.data() as Omit<Standing, "id">) })));
+    const unsubStandings = onSnapshot(doc(db, "standings", "data"), (snap) => {
+      const payload = (snap.data() || {}) as { items?: Standing[] };
+      setStandings(Array.isArray(payload.items) ? payload.items : []);
     });
-    const unsubMatches = onSnapshot(query(collection(db, "matches")), (snap) => {
-      setMatches(snap.docs.map((doc) => ({ id: doc.id, ...(doc.data() as Omit<Match, "id">) })));
+    const unsubMatches = onSnapshot(doc(db, "matches", "data"), (snap) => {
+      const payload = (snap.data() || {}) as { items?: Match[] };
+      setMatches(Array.isArray(payload.items) ? payload.items : []);
     });
     return () => {
       unsubStandings();
@@ -42,7 +44,12 @@ export default function GroupAPage() {
   );
 
   const groupAMatches = useMemo(
-    () => matches.filter((m) => String(m.group || "").toUpperCase() === "A"),
+    () =>
+      matches.filter((m) => {
+        const group = String(m.group || "").toUpperCase();
+        const phase = String((m as any).phase || "").toUpperCase();
+        return group === "A" || phase.includes("(A)") || phase.includes("GRUP A") || phase.includes("GROUP A");
+      }),
     [matches]
   );
 

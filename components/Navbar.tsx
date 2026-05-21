@@ -197,7 +197,9 @@ export default function Navbar({
                         <button
                           key={d}
                           className={`mob-date-btn ${selectedDate === d ? "active" : ""}`}
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
                             onDateChange?.(d);
                             router.push(`/matches?date=${d}`);
                             setMob(false);

@@ -2450,8 +2450,16 @@ h3,
   background: #ffffff;
   box-shadow: 0 40px 60px rgba(0,0,0,0.1);
   border-bottom: 1px solid rgba(0,0,0,0.06);
+  position: relative;
+  z-index: 450;
+  pointer-events: none;
 }
-.mob-open { max-height: 500px; }
+.mob-open {
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  pointer-events: auto;
+}
 .mob-row-wrap { width: 100%; }
 .mob-row {
   display: flex; align-items: center;
@@ -2493,6 +2501,8 @@ h3,
   padding: 16px 28px 28px;
   border-top: 1px solid rgba(0,0,0,0.03);
   animation: mobSlideIn 0.3s ease-out;
+  position: relative;
+  z-index: 2;
 }
 @keyframes mobSlideIn {
   from { opacity: 0; transform: translateY(-10px); }
@@ -2517,6 +2527,9 @@ h3,
   border: 1px solid rgba(0,0,0,0.05);
   border-radius: 8px; cursor: pointer;
   transition: all 0.2s;
+  position: relative;
+  z-index: 3;
+  touch-action: manipulation;
 }
 .mob-date-btn.active {
   background: rgba(122,0,0,0.08);

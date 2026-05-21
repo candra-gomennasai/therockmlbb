@@ -101,7 +101,7 @@ export default function RootLayout({
         {/* Server-rendered preloader — visible BEFORE any JS runs */}
         <div id="site-preloader" aria-hidden="true">
           <div className="pl-logo-box">
-            <img src="/_next/image?url=%2Flogo.png&w=128&q=75" alt="" width="60" height="60" loading="eager" fetchPriority="high" decoding="async" />
+            <img src="/logo.png" alt="" width="60" height="60" loading="eager" fetchPriority="high" decoding="async" />
             <div className="pl-ring" />
           </div>
           <div className="pl-name">
